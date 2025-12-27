@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - VEAF Community{% endblock %}
+
+{% block content %}
+<div class="container">
+    <nav class="breadcrumb">
+        <a href="/">Accueil</a>
+        {% for crumb in breadcrumbs %}
+        <span class="separator">/</span>
+        {% if loop.last %}
+        <span class="current">{{ crumb.name }}</span>
+        {% else %}
+        <a href="/category/{{ get_category_url_slug(crumb) }}">{{ crumb.name }}</a>
+        {% endif %}
+        {% endfor %}
+    </nav>
+
+    <h1 {% if category.bgColor %}style="border-left: 4px solid {{ category.bgColor }}; padding-left: 15px;"{% endif %}>
+        {% if category.icon %}<i class="{{ category.icon }}"></i>{% endif %}
+        {{ category.name }}
+    </h1>
+
+    {% if subcategories %}
+    <section class="subcategories-section">
+        <h2>Sous-categories</h2>
+        <div class="subcategory-list">
+            {% for sub in subcategories %}
+            <a href="/category/{{ get_category_url_slug(sub) }}" class="subcategory-card" {% if sub.bgColor %}style="border-left: 3px solid {{ sub.bgColor }}"{% endif %}>
+                <span class="subcategory-name">{{ sub.name }}</span>
+                <span class="subcategory-count">{{ sub.topic_count or 0 }} topics</span>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <section class="topics-section">
+        <h2>Topics ({{ total }})</h2>
+        {% if topics %}
+        <div class="topic-list">
+            {% for topic in topics %}
+            <article class="topic-card">
+                <div class="topic-main">
+                    <a href="/topic/{{ get_topic_url_slug(topic) }}" class="topic-title">
+                        {% if topic.pinned %}<span class="badge pinned">Epingle</span>{% endif %}
+                        {% if topic.locked %}<span class="badge locked">Verrouille</span>{% endif %}
+                        {{ topic.title }}
+                    </a>
+                    <div class="topic-meta">
+                        <span class="topic-date">{{ topic.created.strftime('%d/%m/%Y %H:%M') }}</span>
+                        <span class="topic-posts">{{ topic.post_count }} posts</span>
+                        <!-- <span class="topic-views">{{ topic.view_count }} vues</span> -->
+                        <!-- {% if topic.rating %}<span class="topic-rating">+{{ topic.rating }}</span>{% endif %} -->
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        {% if total_pages > 1 %}
+        <nav class="pagination">
+            {% if page > 1 %}
+            <a href="?page={{ page - 1 }}&page_size={{ page_size }}" class="page-link">&laquo; Précédent</a>
+            {% endif %}
+
+            <span class="page-info">Page {{ page }} sur {{ total_pages }}</span>
+
+            {% if page < total_pages %}
+            <a href="?page={{ page + 1 }}&page_size={{ page_size }}" class="page-link">Suivant &raquo;</a>
+            {% endif %}
+        </nav>
+        {% endif %}
+        {% else %}
+        <p class="no-topics">Aucun topic dans cette catégorie.</p>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

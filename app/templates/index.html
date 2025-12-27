@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Accueil - VEAF Community{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Bienvenue sur VEAF Community</h1>
+
+    <i>Ce site est une archive de notre ancien forum, dont le contenu est accessible en lecture seule</i><br/><br/>
+
+    {% if export_info %}
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-value">{{ export_info.total_categories }}</span>
+            <span class="stat-label">Catégories</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value">{{ export_info.total_topics }}</span>
+            <span class="stat-label">Topics</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value">{{ export_info.total_posts }}</span>
+            <span class="stat-label">Posts</span>
+        </div>
+        <div class="stat">
+            <span class="stat-value">{{ export_info.total_users }}</span>
+            <span class="stat-label">Utilisateurs</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <h2>Catégories</h2>
+    <div class="category-tree">
+        {% macro render_category(cat, level=0) %}
+        <div class="category-item level-{{ level }}" {% if cat.bgColor %}style="border-left: 4px solid {{ cat.bgColor }}"{% endif %}>
+            <div class="category-header">
+                {% if cat.icon %}
+                <i class="{{ cat.icon }}"></i>
+                {% endif %}
+                <a href="/category/{{ get_category_url_slug(cat) }}" class="category-name">{{ cat.name }}</a>
+                <span class="category-count">{{ cat.topic_count }} topics</span>
+            </div>
+            {% if cat.children %}
+            <div class="subcategories">
+                {% for child in cat.children %}
+                {{ render_category(child, level + 1) }}
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        {% endmacro %}
+
+        {% for category in categories %}
+        {{ render_category(category) }}
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

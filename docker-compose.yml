@@ -1,0 +1,20 @@
+services:
+  app:
+    build: .
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - VIRTUAL_PORT=8080
+      - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
+      - DATA_PATH=/data
+      - IMAGES_PATH=/data/images
+    volumes:
+      - ${DATA_VOLUME_PATH:-./data}:/data
+    restart: unless-stopped
+    networks:
+      - webproxy
+
+networks:
+  webproxy:
+    external: true
+    name: ${PROXY_NETWORK:-webproxy}

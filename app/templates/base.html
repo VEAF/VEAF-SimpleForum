@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}VEAF Community{% endblock %}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header-content">
+            <a href="/" class="logo">VEAF Community</a>
+            <nav class="nav">
+                <a href="/">Accueil</a>
+                <a href="/search">Recherche</a>
+            </nav>
+            <form action="/search" method="get" class="search-form">
+                <input type="text" name="q" placeholder="Rechercher..." value="{{ query if query else '' }}">
+                <button type="submit">Rechercher</button>
+            </form>
+        </div>
+    </header>
+
+    <main class="main">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <p>VEAF Community - Virtual European Air Force</p>
+    </footer>
+</body>
+</html>
