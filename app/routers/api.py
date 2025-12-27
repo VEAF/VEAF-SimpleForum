@@ -13,9 +13,15 @@ _search_service = None
 
 
 def parse_id_from_path(path: str) -> int:
-    """Extract ID from path like '20-some-slug' or '20'."""
-    parts = path.split("-", 1)
-    return int(parts[0])
+    """Extract ID from path like '20/some-slug', '20-some-slug' (legacy), or '20'."""
+    # Nouveau format: id/slug
+    if "/" in path:
+        return int(path.split("/", 1)[0])
+    # Ancien format (legacy): id-slug
+    if "-" in path:
+        return int(path.split("-", 1)[0])
+    # ID seul
+    return int(path)
 
 
 def get_search_service() -> SearchService:

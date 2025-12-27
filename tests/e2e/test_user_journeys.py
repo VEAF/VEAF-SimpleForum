@@ -45,15 +45,15 @@ class TestBrowsingJourney:
 
     def test_navigate_back_to_category(self, client: TestClient):
         """Test navigating from topic back to category."""
-        # View a topic
-        topic_response = client.get("/topic/100-first-test-topic")
+        # View a topic (NodeBB format)
+        topic_response = client.get("/topic/100/first-test-topic")
         assert topic_response.status_code == 200
 
-        # Back button link should exist with slug
-        assert "/category/1-test-category" in topic_response.text
+        # Back button link should exist with slug (NodeBB format)
+        assert "/category/1/test-category" in topic_response.text
 
         # Navigate back
-        category_response = client.get("/category/1-test-category")
+        category_response = client.get("/category/1/test-category")
         assert category_response.status_code == 200
 
 

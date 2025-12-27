@@ -13,24 +13,36 @@ _search_service = None
 
 
 def parse_id_from_path(path: str) -> int:
-    """Extract ID from path like '20-some-slug' or '20'."""
-    parts = path.split("-", 1)
-    return int(parts[0])
+    """Extract ID from path like '20/some-slug', '20-some-slug' (legacy), or '20'."""
+    # Nouveau format: id/slug
+    if "/" in path:
+        return int(path.split("/", 1)[0])
+    # Ancien format (legacy): id-slug
+    if "-" in path:
+        return int(path.split("-", 1)[0])
+    # ID seul
+    return int(path)
 
 
 def get_category_url_slug(category: dict) -> str:
-    """Get URL slug for category (id-slug-text)."""
+    """Get URL path for category: {id}/{slug} (NodeBB format)."""
+    cat_id = category["id"]
     slug = category.get("slug", "")
+    # Le slug peut contenir un chemin (ex: "parent/child"), on prend la derniere partie
     slug_part = slug.split("/")[-1] if "/" in slug else slug
-    return f"{category['id']}-{slug_part}" if slug_part else str(category["id"])
+    return f"{cat_id}/{slug_part}" if slug_part else str(cat_id)
 
 
 def get_topic_url_slug(topic: dict) -> str:
-    """Get URL slug for topic. The slug is the filename stem which already contains id-title."""
+    """Get URL path for topic: {id}/{title-slug} (NodeBB format)."""
+    topic_id = topic["topic_id"]
     slug = topic.get("slug", "")
     if slug:
-        return slug
-    return str(topic["topic_id"])
+        # slug contient "{id}-{title}", on extrait juste le titre
+        parts = slug.split("-", 1)
+        title_slug = parts[1] if len(parts) > 1 else ""
+        return f"{topic_id}/{title_slug}" if title_slug else str(topic_id)
+    return str(topic_id)
 
 
 def get_search_service() -> SearchService:
