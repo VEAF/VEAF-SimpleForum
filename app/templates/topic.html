@@ -22,11 +22,11 @@
                 {{ topic.title }}
             </h1>
             <div class="topic-info">
-                <span class="topic-date">Créé le {{ topic.created.strftime('%d/%m/%Y a %H:%M') }}</span>
+                <span class="topic-date">Créé le {{ topic.created.strftime('%d/%m/%Y à %H:%M') }}</span>
                 {% if topic.last_post %}
-                <span class="topic-last">Dernier post: {{ topic.last_post.strftime('%d/%m/%Y a %H:%M') }}</span>
+                <span class="topic-last">Dernier post: {{ topic.last_post.strftime('%d/%m/%Y à %H:%M') }}</span>
                 {% endif %}
-                <span class="topic-stats">{{ topic.post_count }} posts | {{ topic.view_count }} vues | +{{ topic.rating }}</span>
+                <span class="topic-stats">{{ topic.post_count }} posts</span>
             </div>
             {% if topic.tags %}
             <div class="topic-tags">

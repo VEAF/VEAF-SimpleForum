@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -90,7 +91,16 @@ class DataStore:
 
                 topic_data["content"] = post.content
                 self._md.reset()
-                topic_data["content_html"] = self._md.convert(post.content)
+                content_html = self._md.convert(post.content)
+                # Supprimer le premier h1 s'il correspond au titre (évite duplication)
+                title = topic_data.get("title", "")
+                if title:
+                    # Pattern pour matcher <h1>titre</h1> au début du contenu
+                    h1_pattern = re.compile(
+                        rf"^\s*<h1>{re.escape(title)}</h1>\s*", re.IGNORECASE
+                    )
+                    content_html = h1_pattern.sub("", content_html)
+                topic_data["content_html"] = content_html
                 topic_data["_path"] = str(md_file)
                 topic_data["slug"] = md_file.stem
 
@@ -162,7 +172,10 @@ class DataStore:
                 return datetime.min if reverse else datetime.max
             return val
 
+        # Tri en deux étapes: d'abord par le critère demandé, puis épinglés en premier
         topics.sort(key=sort_key, reverse=reverse)
+        # Tri stable: les épinglés restent triés entre eux mais passent en premier
+        topics.sort(key=lambda t: not t.get("pinned", False))
 
         total = len(topics)
         start = (page - 1) * page_size

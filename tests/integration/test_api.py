@@ -135,7 +135,8 @@ class TestTopicsAPI:
         assert data["title"] == "First Test Topic"
         assert "content" in data
         assert "content_html" in data
-        assert "<h1>" in data["content_html"]
+        # Le h1 du titre est supprimé pour éviter la duplication
+        assert "<h1>" not in data["content_html"]
 
     def test_get_topic_not_found(self, client: TestClient):
         """Test getting non-existent topic."""
