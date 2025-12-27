@@ -94,6 +94,8 @@ async def category_page(
 
     topics, total = store.get_category_topics(category_id, page, page_size)
     subcategories = store.get_subcategories(category_id)
+    for sub in subcategories:
+        sub["topic_count"] = len(store.category_topics.get(sub["id"], []))
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     breadcrumbs = []

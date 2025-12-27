@@ -28,7 +28,7 @@
             {% for sub in subcategories %}
             <a href="/category/{{ get_category_url_slug(sub) }}" class="subcategory-card" {% if sub.bgColor %}style="border-left: 3px solid {{ sub.bgColor }}"{% endif %}>
                 <span class="subcategory-name">{{ sub.name }}</span>
-                <span class="subcategory-count">{{ sub.topiccount or 0 }} topics</span>
+                <span class="subcategory-count">{{ sub.topic_count or 0 }} topics</span>
             </a>
             {% endfor %}
         </div>

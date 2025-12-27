@@ -68,6 +68,7 @@ class DataStore:
                         cat_data.setdefault("bgColor", None)
                         cat_data.setdefault("color", None)
                         cat_data.setdefault("postcount", 0)
+                        # topiccount: valeur statique de NodeBB, non utilisée (topic_count calculé dynamiquement)
                         cat_data.setdefault("topiccount", 0)
                         self.categories[cat_data["id"]] = cat_data
             except Exception:
