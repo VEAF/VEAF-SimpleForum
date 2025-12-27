@@ -512,6 +512,29 @@ h2 {
     margin-bottom: 1.5rem;
 }
 
+/* Page d'erreur 404 */
+.error-page {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.error-page h1 {
+    font-size: 6rem;
+    color: var(--secondary-color);
+    margin-bottom: 0.5rem;
+}
+
+.error-page .error-message {
+    font-size: 1.5rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.error-page .error-description {
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+}
+
 @media (max-width: 768px) {
     .header-content {
         flex-direction: column;
@@ -544,5 +567,9 @@ h2 {
 
     .search-box {
         flex-direction: column;
+    }
+
+    .error-page h1 {
+        font-size: 4rem;
     }
 }

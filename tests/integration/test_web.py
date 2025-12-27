@@ -91,9 +91,12 @@ class TestCategoryPage:
         assert "Test Subcategory" in response.text
 
     def test_category_page_not_found(self, client: TestClient):
-        """Test category page for non-existent category."""
+        """Test category page for non-existent category returns HTML 404."""
         response = client.get("/category/999-nonexistent")
         assert response.status_code == 404
+        assert "text/html" in response.headers["content-type"]
+        assert "Retour à l'accueil" in response.text
+        assert "Page non trouvée" in response.text
 
     def test_subcategory_page_breadcrumb(self, client: TestClient):
         """Test that subcategory page has full breadcrumb."""
@@ -175,9 +178,12 @@ class TestTopicPage:
         assert "pinned" in response.text.lower() or "Epingle" in response.text
 
     def test_topic_page_not_found(self, client: TestClient):
-        """Test topic page for non-existent topic."""
+        """Test topic page for non-existent topic returns HTML 404."""
         response = client.get("/topic/999-nonexistent")
         assert response.status_code == 404
+        assert "text/html" in response.headers["content-type"]
+        assert "Retour à l'accueil" in response.text
+        assert "Page non trouvée" in response.text
 
     def test_topic_page_back_link_has_slug(self, client: TestClient):
         """Test that topic page has back to category link with slug."""
