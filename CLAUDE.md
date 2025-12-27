@@ -46,3 +46,19 @@ poetry run pytest --cov=app --cov-report=term-missing  # With coverage
 
 ### Testing
 Tests use fixtures in `tests/conftest.py` that create temporary test data and mock the global `data_store`. The `mock_data_store` fixture also resets `_search_service` in both routers to ensure test isolation.
+
+#### Test Structure (GIVEN / WHEN / THEN)
+Use comments to structure tests following the GIVEN/WHEN/THEN pattern:
+
+```python
+def test_example():
+    # GIVEN a user with valid credentials
+    user = create_user(name="test", role="admin")
+
+    # WHEN the user attempts to login
+    result = login(user.name, user.password)
+
+    # THEN the login should succeed
+    assert result.success is True
+    assert result.token is not None
+```
