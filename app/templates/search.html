@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Recherche{% if query %}: {{ query }}{% endif %} - VEAF Community{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Recherche</h1>
+
+    <form action="/search" method="get" class="search-box">
+        <input type="text" name="q" value="{{ query }}" placeholder="Entrez votre recherche..." autofocus>
+        <button type="submit">Rechercher</button>
+    </form>
+
+    {% if query %}
+    <div class="search-results">
+        <h2>Resultats pour "{{ query }}" ({{ total }})</h2>
+
+        {% if results %}
+        <div class="topic-list">
+            {% for topic in results %}
+            <article class="topic-card">
+                <div class="topic-main">
+                    <a href="/topic/{{ get_topic_url_slug(topic) }}" class="topic-title">
+                        {% if topic.pinned %}<span class="badge pinned">Epingle</span>{% endif %}
+                        {{ topic.title }}
+                    </a>
+                    <div class="topic-meta">
+                        <span class="topic-date">{{ topic.created.strftime('%d/%m/%Y') }}</span>
+                        <span class="topic-posts">{{ topic.post_count }} posts</span>
+                        <span class="topic-views">{{ topic.view_count }} vues</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="no-results">Aucun resultat trouve pour "{{ query }}".</p>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
