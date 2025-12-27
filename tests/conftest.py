@@ -1,17 +1,17 @@
-import pytest
-import tempfile
 import shutil
+import tempfile
+from collections.abc import Generator
 from pathlib import Path
-from typing import Generator
 
+import pytest
 from fastapi.testclient import TestClient
-from httpx import AsyncClient, ASGITransport
+from httpx import ASGITransport, AsyncClient
 
-from app.main import app
-from app.services import data_loader
-from app.routers import web as web_router
-from app.routers import api as api_router
 from app.config import settings
+from app.main import app
+from app.routers import api as api_router
+from app.routers import web as web_router
+from app.services import data_loader
 
 
 @pytest.fixture(scope="session")
@@ -161,7 +161,7 @@ This topic belongs to a subcategory.
 
     # Create a test image
     test_image = images_dir / "test.jpg"
-    test_image.write_bytes(b'\xff\xd8\xff\xe0\x00\x10JFIF')
+    test_image.write_bytes(b"\xff\xd8\xff\xe0\x00\x10JFIF")
 
     yield temp_dir
 

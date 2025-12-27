@@ -1,5 +1,5 @@
-from typing import Optional, List
 from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -15,8 +15,8 @@ class TopicSummary(BaseModel):
     post_count: int = 0
     rating: int = 0
     view_count: int = 0
-    tags: List[str] = []
-    last_post: Optional[datetime] = None
+    tags: list[str] = []
+    last_post: datetime | None = None
     slug: str = ""
 
 

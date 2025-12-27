@@ -50,8 +50,8 @@
                     <div class="topic-meta">
                         <span class="topic-date">{{ topic.created.strftime('%d/%m/%Y %H:%M') }}</span>
                         <span class="topic-posts">{{ topic.post_count }} posts</span>
-                        <span class="topic-views">{{ topic.view_count }} vues</span>
-                        {% if topic.rating %}<span class="topic-rating">+{{ topic.rating }}</span>{% endif %}
+                        <!-- <span class="topic-views">{{ topic.view_count }} vues</span> -->
+                        <!-- {% if topic.rating %}<span class="topic-rating">+{{ topic.rating }}</span>{% endif %} -->
                     </div>
                 </div>
             </article>
@@ -61,7 +61,7 @@
         {% if total_pages > 1 %}
         <nav class="pagination">
             {% if page > 1 %}
-            <a href="?page={{ page - 1 }}&page_size={{ page_size }}" class="page-link">&laquo; Precedent</a>
+            <a href="?page={{ page - 1 }}&page_size={{ page_size }}" class="page-link">&laquo; Précédent</a>
             {% endif %}
 
             <span class="page-info">Page {{ page }} sur {{ total_pages }}</span>
@@ -72,7 +72,7 @@
         </nav>
         {% endif %}
         {% else %}
-        <p class="no-topics">Aucun topic dans cette categorie.</p>
+        <p class="no-topics">Aucun topic dans cette catégorie.</p>
         {% endif %}
     </section>
 </div>

@@ -1,5 +1,5 @@
 """End-to-end tests simulating real user journeys."""
-import pytest
+
 from fastapi.testclient import TestClient
 
 

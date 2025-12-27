@@ -1,15 +1,16 @@
-from fastapi import APIRouter, HTTPException, Query
-from typing import List
+from typing import Any
 
-from app.models.category import CategorySummary, CategoryDetail, CategoryTree
-from app.models.topic import TopicSummary, TopicDetail
-from app.models.common import PaginatedResponse, ExportInfo
+from fastapi import APIRouter, HTTPException, Query
+
+from app.models.category import CategoryDetail, CategorySummary, CategoryTree
+from app.models.common import ExportInfo, PaginatedResponse
+from app.models.topic import TopicDetail, TopicSummary
 from app.services.data_loader import get_data_store
 from app.services.search import SearchService
 
 router = APIRouter(prefix="/api/v1")
 
-_search_service = None
+_search_service: SearchService | None = None
 
 
 def parse_id_from_path(path: str) -> int:
@@ -32,7 +33,7 @@ def get_search_service() -> SearchService:
 
 
 @router.get("/info", response_model=ExportInfo)
-async def get_info():
+async def get_info() -> ExportInfo:
     store = get_data_store()
     info = store.export_info
     return ExportInfo(
@@ -43,8 +44,8 @@ async def get_info():
     )
 
 
-@router.get("/categories", response_model=List[CategorySummary])
-async def list_root_categories():
+@router.get("/categories", response_model=list[CategorySummary])
+async def list_root_categories() -> list[CategorySummary]:
     store = get_data_store()
     categories = store.get_root_categories()
     return [
@@ -66,11 +67,11 @@ async def list_root_categories():
     ]
 
 
-@router.get("/categories/tree", response_model=List[CategoryTree])
-async def get_category_tree():
+@router.get("/categories/tree", response_model=list[CategoryTree])
+async def get_category_tree() -> list[CategoryTree]:
     store = get_data_store()
 
-    def build_tree(cat_data: dict) -> CategoryTree:
+    def build_tree(cat_data: dict[str, Any]) -> CategoryTree:
         return CategoryTree(
             id=cat_data["id"],
             name=cat_data["name"],
@@ -91,24 +92,29 @@ async def get_category_tree():
     return [build_tree(c) for c in tree_data]
 
 
-@router.get("/categories/{category_path:path}/topics", response_model=PaginatedResponse[TopicSummary])
+@router.get(
+    "/categories/{category_path:path}/topics",
+    response_model=PaginatedResponse[TopicSummary],
+)
 async def list_category_topics(
     category_path: str,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
     sort_by: str = Query("created", pattern="^(created|last_post|view_count|rating)$"),
     order: str = Query("desc", pattern="^(asc|desc)$"),
-):
+) -> PaginatedResponse[TopicSummary]:
     try:
         category_id = parse_id_from_path(category_path)
     except (ValueError, IndexError):
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail="Category not found") from None
 
     store = get_data_store()
     if category_id not in store.categories:
         raise HTTPException(status_code=404, detail="Category not found")
 
-    topics, total = store.get_category_topics(category_id, page, page_size, sort_by, order)
+    topics, total = store.get_category_topics(
+        category_id, page, page_size, sort_by, order
+    )
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
     return PaginatedResponse(
@@ -139,11 +145,11 @@ async def list_category_topics(
 
 
 @router.get("/categories/{category_path:path}", response_model=CategoryDetail)
-async def get_category(category_path: str):
+async def get_category(category_path: str) -> CategoryDetail:
     try:
         category_id = parse_id_from_path(category_path)
     except (ValueError, IndexError):
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail="Category not found") from None
 
     store = get_data_store()
     cat = store.get_category(category_id)
@@ -191,7 +197,7 @@ async def list_all_topics(
     page_size: int = Query(20, ge=1, le=100),
     sort_by: str = Query("created", pattern="^(created|last_post|view_count|rating)$"),
     order: str = Query("desc", pattern="^(asc|desc)$"),
-):
+) -> PaginatedResponse[TopicSummary]:
     store = get_data_store()
     topics, total = store.get_all_topics(page, page_size, sort_by, order)
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
@@ -224,11 +230,11 @@ async def list_all_topics(
 
 
 @router.get("/topics/{topic_path:path}", response_model=TopicDetail)
-async def get_topic(topic_path: str):
+async def get_topic(topic_path: str) -> TopicDetail:
     try:
         topic_id = parse_id_from_path(topic_path)
     except (ValueError, IndexError):
-        raise HTTPException(status_code=404, detail="Topic not found")
+        raise HTTPException(status_code=404, detail="Topic not found") from None
 
     store = get_data_store()
     topic = store.get_topic(topic_id)
@@ -255,11 +261,11 @@ async def get_topic(topic_path: str):
     )
 
 
-@router.get("/search", response_model=List[TopicSummary])
+@router.get("/search", response_model=list[TopicSummary])
 async def search_topics(
     q: str = Query(..., min_length=1),
     limit: int = Query(20, ge=1, le=100),
-):
+) -> list[TopicSummary]:
     search_service = get_search_service()
     results = search_service.search(q, limit)
 

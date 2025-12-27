@@ -17,12 +17,12 @@
     <article class="topic-detail">
         <header class="topic-header">
             <h1>
-                {% if topic.pinned %}<span class="badge pinned">Epingle</span>{% endif %}
-                {% if topic.locked %}<span class="badge locked">Verrouille</span>{% endif %}
+                {% if topic.pinned %}<span class="badge pinned">Epinglé</span>{% endif %}
+                {% if topic.locked %}<span class="badge locked">Verrouillé</span>{% endif %}
                 {{ topic.title }}
             </h1>
             <div class="topic-info">
-                <span class="topic-date">Cree le {{ topic.created.strftime('%d/%m/%Y a %H:%M') }}</span>
+                <span class="topic-date">Créé le {{ topic.created.strftime('%d/%m/%Y a %H:%M') }}</span>
                 {% if topic.last_post %}
                 <span class="topic-last">Dernier post: {{ topic.last_post.strftime('%d/%m/%Y a %H:%M') }}</span>
                 {% endif %}
@@ -43,7 +43,7 @@
     </article>
 
     <div class="topic-actions">
-        <a href="/category/{{ get_category_url_slug(category) }}" class="btn">Retouràa la catégorie</a>
+        <a href="/category/{{ get_category_url_slug(category) }}" class="btn">Retour à la catégorie</a>
     </div>
 </div>
 {% endblock %}

@@ -1,7 +1,9 @@
-from fastapi import APIRouter, Request, Query, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
-from fastapi.templating import Jinja2Templates
 from pathlib import Path
+from typing import Any
+
+from fastapi import APIRouter, HTTPException, Query, Request
+from fastapi.responses import HTMLResponse, RedirectResponse, Response
+from fastapi.templating import Jinja2Templates
 
 from app.services.data_loader import get_data_store
 from app.services.search import SearchService
@@ -9,7 +11,7 @@ from app.services.search import SearchService
 router = APIRouter()
 templates = Jinja2Templates(directory=Path(__file__).parent.parent / "templates")
 
-_search_service = None
+_search_service: SearchService | None = None
 
 
 def parse_id_from_path(path: str) -> int:
@@ -24,7 +26,7 @@ def parse_id_from_path(path: str) -> int:
     return int(path)
 
 
-def get_category_url_slug(category: dict) -> str:
+def get_category_url_slug(category: dict[str, Any]) -> str:
     """Get URL path for category: {id}/{slug} (NodeBB format)."""
     cat_id = category["id"]
     slug = category.get("slug", "")
@@ -33,7 +35,7 @@ def get_category_url_slug(category: dict) -> str:
     return f"{cat_id}/{slug_part}" if slug_part else str(cat_id)
 
 
-def get_topic_url_slug(topic: dict) -> str:
+def get_topic_url_slug(topic: dict[str, Any]) -> str:
     """Get URL path for topic: {id}/{title-slug} (NodeBB format)."""
     topic_id = topic["topic_id"]
     slug = topic.get("slug", "")
@@ -53,7 +55,7 @@ def get_search_service() -> SearchService:
 
 
 @router.get("/", response_class=HTMLResponse)
-async def home(request: Request):
+async def home(request: Request) -> Response:
     store = get_data_store()
     category_tree = store.build_category_tree(0)
     return templates.TemplateResponse(
@@ -73,11 +75,11 @@ async def category_page(
     category_path: str,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
-):
+) -> Response:
     try:
         category_id = parse_id_from_path(category_path)
     except (ValueError, IndexError):
-        raise HTTPException(status_code=404, detail="Category not found")
+        raise HTTPException(status_code=404, detail="Category not found") from None
 
     store = get_data_store()
     category = store.get_category(category_id)
@@ -98,8 +100,8 @@ async def category_page(
         sub["topic_count"] = len(store.category_topics.get(sub["id"], []))
     total_pages = (total + page_size - 1) // page_size if total > 0 else 1
 
-    breadcrumbs = []
-    current_cat = category
+    breadcrumbs: list[dict[str, Any]] = []
+    current_cat: dict[str, Any] | None = category
     while current_cat:
         breadcrumbs.insert(0, current_cat)
         parent_cid = current_cat.get("parent_cid", 0)
@@ -129,11 +131,11 @@ async def category_page(
 async def topic_page(
     request: Request,
     topic_path: str,
-):
+) -> Response:
     try:
         topic_id = parse_id_from_path(topic_path)
     except (ValueError, IndexError):
-        raise HTTPException(status_code=404, detail="Topic not found")
+        raise HTTPException(status_code=404, detail="Topic not found") from None
 
     store = get_data_store()
     topic = store.get_topic(topic_id)
@@ -144,10 +146,11 @@ async def topic_page(
     if topic_path != canonical_path:
         return RedirectResponse(url=f"/topic/{canonical_path}", status_code=301)
 
-    category = store.get_category(topic.get("category_id"))
+    category_id = topic.get("category_id")
+    category = store.get_category(category_id) if category_id is not None else None
 
-    breadcrumbs = []
-    current_cat = category
+    breadcrumbs: list[dict[str, Any]] = []
+    current_cat: dict[str, Any] | None = category
     while current_cat:
         breadcrumbs.insert(0, current_cat)
         parent_cid = current_cat.get("parent_cid", 0)
@@ -172,7 +175,7 @@ async def topic_page(
 async def search_page(
     request: Request,
     q: str = Query("", min_length=0),
-):
+) -> Response:
     results = []
     if q:
         search_service = get_search_service()

@@ -1,4 +1,4 @@
-from typing import Optional, List
+
 from pydantic import BaseModel, Field
 
 
@@ -7,9 +7,9 @@ class CategorySummary(BaseModel):
     name: str
     slug: str
     parent_cid: int = Field(default=0, description="Parent category ID, 0 for root")
-    icon: Optional[str] = None
-    bgColor: Optional[str] = None
-    color: Optional[str] = None
+    icon: str | None = None
+    bgColor: str | None = None
+    color: str | None = None
     order: int = 0
     disabled: bool = False
     is_subcategory: bool = False
@@ -18,8 +18,8 @@ class CategorySummary(BaseModel):
 
 
 class CategoryDetail(CategorySummary):
-    subcategories: List["CategorySummary"] = []
+    subcategories: list["CategorySummary"] = []
 
 
 class CategoryTree(CategorySummary):
-    children: List["CategoryTree"] = []
+    children: list["CategoryTree"] = []

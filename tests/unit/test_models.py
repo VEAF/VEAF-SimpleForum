@@ -1,10 +1,10 @@
 """Unit tests for Pydantic models."""
-import pytest
+
 from datetime import datetime
 
-from app.models.category import CategorySummary, CategoryDetail, CategoryTree
-from app.models.topic import TopicSummary, TopicDetail
-from app.models.common import PaginatedResponse, ExportInfo, ErrorResponse
+from app.models.category import CategoryDetail, CategorySummary, CategoryTree
+from app.models.common import ErrorResponse, ExportInfo, PaginatedResponse
+from app.models.topic import TopicDetail, TopicSummary
 
 
 class TestCategoryModels:
@@ -57,7 +57,9 @@ class TestCategoryModels:
 
     def test_category_tree_nested(self):
         """Test CategoryTree with nested children."""
-        child = CategoryTree(id=2, name="Child", slug="2/child", parent_cid=1, children=[])
+        child = CategoryTree(
+            id=2, name="Child", slug="2/child", parent_cid=1, children=[]
+        )
         parent = CategoryTree(
             id=1,
             name="Parent",

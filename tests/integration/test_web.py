@@ -1,5 +1,5 @@
 """Integration tests for web (HTML) endpoints."""
-import pytest
+
 from fastapi.testclient import TestClient
 
 
@@ -63,7 +63,7 @@ class TestCategoryPage:
         assert response.headers["location"] == "/category/1/test-category"
 
     def test_category_page_redirects_legacy_format(self, client: TestClient):
-        """Test that category page redirects legacy format (id-slug) to new format (id/slug)."""
+        """Test that category page redirects legacy format to new format."""
         response = client.get("/category/1-test-category", follow_redirects=False)
         assert response.status_code == 301
         assert response.headers["location"] == "/category/1/test-category"
@@ -151,7 +151,7 @@ class TestTopicPage:
         assert response.headers["location"] == "/topic/100/first-test-topic"
 
     def test_topic_page_redirects_legacy_format(self, client: TestClient):
-        """Test that topic page redirects legacy format (id-slug) to new format (id/slug)."""
+        """Test that topic page redirects legacy format to new format."""
         response = client.get("/topic/100-first-test-topic", follow_redirects=False)
         assert response.status_code == 301
         assert response.headers["location"] == "/topic/100/first-test-topic"

@@ -13,7 +13,7 @@
 
     {% if query %}
     <div class="search-results">
-        <h2>Resultats pour "{{ query }}" ({{ total }})</h2>
+        <h2>Résultats pour "{{ query }}" ({{ total }})</h2>
 
         {% if results %}
         <div class="topic-list">
@@ -27,14 +27,14 @@
                     <div class="topic-meta">
                         <span class="topic-date">{{ topic.created.strftime('%d/%m/%Y') }}</span>
                         <span class="topic-posts">{{ topic.post_count }} posts</span>
-                        <span class="topic-views">{{ topic.view_count }} vues</span>
+                        <!-- <span class="topic-views">{{ topic.view_count }} vues</span> -->
                     </div>
                 </div>
             </article>
             {% endfor %}
         </div>
         {% else %}
-        <p class="no-results">Aucun resultat trouve pour "{{ query }}".</p>
+        <p class="no-results">Aucun résultat trouvé pour "{{ query }}".</p>
         {% endif %}
     </div>
     {% endif %}

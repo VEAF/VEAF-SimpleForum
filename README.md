@@ -129,6 +129,22 @@ poetry run pytest tests/integration/   # Tests d'intégration
 poetry run pytest tests/e2e/           # Tests end-to-end
 ```
 
+## Linting et formatage
+
+Le projet utilise **ruff** pour le linting et le formatage, et **mypy** pour la vérification des types.
+
+```bash
+# Linting
+poetry run ruff check app/ tests/       # Vérifier le code
+poetry run ruff check app/ tests/ --fix # Corriger automatiquement
+
+# Formatage
+poetry run ruff format app/ tests/      # Formater le code
+
+# Vérification des types
+poetry run mypy app/                    # Mode strict
+```
+
 ## Structure du projet
 
 ```

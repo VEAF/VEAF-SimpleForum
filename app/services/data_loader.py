@@ -1,14 +1,15 @@
-import yaml
+from datetime import datetime
+from pathlib import Path
+from typing import Any
+
 import frontmatter
 import markdown
-from pathlib import Path
-from typing import Dict, List, Optional, Any
-from datetime import datetime
+import yaml
 
 from app.config import settings
 
 
-def parse_datetime(value: Any) -> Optional[datetime]:
+def parse_datetime(value: Any) -> datetime | None:
     """Parse a datetime value from various formats."""
     if value is None:
         return None
@@ -31,29 +32,29 @@ def parse_datetime(value: Any) -> Optional[datetime]:
 
 
 class DataStore:
-    def __init__(self, data_path: Path):
+    def __init__(self, data_path: Path) -> None:
         self.data_path = data_path
-        self.categories: Dict[int, dict] = {}
-        self.topics: Dict[int, dict] = {}
-        self.category_topics: Dict[int, List[int]] = {}
-        self.category_tree: Dict[int, List[int]] = {}
-        self.export_info: dict = {}
+        self.categories: dict[int, dict[str, Any]] = {}
+        self.topics: dict[int, dict[str, Any]] = {}
+        self.category_topics: dict[int, list[int]] = {}
+        self.category_tree: dict[int, list[int]] = {}
+        self.export_info: dict[str, Any] = {}
         self._md = markdown.Markdown(extensions=["tables", "fenced_code", "nl2br"])
 
-    def load_all(self):
+    def load_all(self) -> None:
         self._load_export_info()
         self._load_categories()
         self._load_topics()
         self._build_indices()
 
-    def _load_export_info(self):
+    def _load_export_info(self) -> None:
         export_file = self.data_path / "_export.yml"
         if export_file.exists():
             with open(export_file, encoding="utf-8") as f:
                 data = yaml.safe_load(f)
                 self.export_info = data.get("export_info", {})
 
-    def _load_categories(self):
+    def _load_categories(self) -> None:
         for cat_file in self.data_path.rglob("_category.yml"):
             try:
                 with open(cat_file, encoding="utf-8") as f:
@@ -63,18 +64,21 @@ class DataStore:
                         cat_data.setdefault("parent_cid", 0)
                         cat_data.setdefault("order", 0)
                         cat_data.setdefault("disabled", False)
-                        cat_data.setdefault("is_subcategory", cat_data.get("parent_cid", 0) != 0)
+                        cat_data.setdefault(
+                            "is_subcategory", cat_data.get("parent_cid", 0) != 0
+                        )
                         cat_data.setdefault("icon", None)
                         cat_data.setdefault("bgColor", None)
                         cat_data.setdefault("color", None)
                         cat_data.setdefault("postcount", 0)
-                        # topiccount: valeur statique de NodeBB, non utilisée (topic_count calculé dynamiquement)
+                        # topiccount: valeur statique de NodeBB, non utilisée
+                        # (topic_count calculé dynamiquement)
                         cat_data.setdefault("topiccount", 0)
                         self.categories[cat_data["id"]] = cat_data
             except Exception:
                 pass
 
-    def _load_topics(self):
+    def _load_topics(self) -> None:
         for md_file in self.data_path.rglob("*.md"):
             if md_file.name == "index.md":
                 continue
@@ -109,7 +113,7 @@ class DataStore:
             except Exception:
                 pass
 
-    def _build_indices(self):
+    def _build_indices(self) -> None:
         for cid, cat in self.categories.items():
             parent = cat.get("parent_cid", 0)
             if parent not in self.category_tree:
@@ -128,26 +132,31 @@ class DataStore:
                     self.category_topics[cat_id] = []
                 self.category_topics[cat_id].append(tid)
 
-    def get_root_categories(self) -> List[dict]:
+    def get_root_categories(self) -> list[dict[str, Any]]:
         root_ids = self.category_tree.get(0, [])
         return [self.categories[cid] for cid in root_ids if cid in self.categories]
 
-    def get_category(self, category_id: int) -> Optional[dict]:
+    def get_category(self, category_id: int) -> dict[str, Any] | None:
         return self.categories.get(category_id)
 
-    def get_subcategories(self, category_id: int) -> List[dict]:
+    def get_subcategories(self, category_id: int) -> list[dict[str, Any]]:
         sub_ids = self.category_tree.get(category_id, [])
         return [self.categories[cid] for cid in sub_ids if cid in self.categories]
 
     def get_category_topics(
-        self, category_id: int, page: int = 1, page_size: int = 20, sort_by: str = "created", order: str = "desc"
-    ) -> tuple[List[dict], int]:
+        self,
+        category_id: int,
+        page: int = 1,
+        page_size: int = 20,
+        sort_by: str = "created",
+        order: str = "desc",
+    ) -> tuple[list[dict[str, Any]], int]:
         topic_ids = self.category_topics.get(category_id, [])
         topics = [self.topics[tid] for tid in topic_ids if tid in self.topics]
 
         reverse = order == "desc"
 
-        def sort_key(t):
+        def sort_key(t: dict[str, Any]) -> Any:
             val = t.get(sort_by)
             if val is None:
                 return datetime.min if reverse else datetime.max
@@ -160,17 +169,21 @@ class DataStore:
         end = start + page_size
         return topics[start:end], total
 
-    def get_topic(self, topic_id: int) -> Optional[dict]:
+    def get_topic(self, topic_id: int) -> dict[str, Any] | None:
         return self.topics.get(topic_id)
 
     def get_all_topics(
-        self, page: int = 1, page_size: int = 20, sort_by: str = "created", order: str = "desc"
-    ) -> tuple[List[dict], int]:
+        self,
+        page: int = 1,
+        page_size: int = 20,
+        sort_by: str = "created",
+        order: str = "desc",
+    ) -> tuple[list[dict[str, Any]], int]:
         topics = list(self.topics.values())
 
         reverse = order == "desc"
 
-        def sort_key(t):
+        def sort_key(t: dict[str, Any]) -> Any:
             val = t.get(sort_by)
             if val is None:
                 return datetime.min if reverse else datetime.max
@@ -183,7 +196,7 @@ class DataStore:
         end = start + page_size
         return topics[start:end], total
 
-    def get_recent_topics(self, limit: int = 10) -> List[dict]:
+    def get_recent_topics(self, limit: int = 10) -> list[dict[str, Any]]:
         topics = sorted(
             self.topics.values(),
             key=lambda t: t.get("created") or datetime.min,
@@ -191,7 +204,7 @@ class DataStore:
         )
         return topics[:limit]
 
-    def build_category_tree(self, parent_id: int = 0) -> List[dict]:
+    def build_category_tree(self, parent_id: int = 0) -> list[dict[str, Any]]:
         result = []
         for cid in self.category_tree.get(parent_id, []):
             cat = self.categories.get(cid)
@@ -203,7 +216,7 @@ class DataStore:
         return result
 
 
-data_store: Optional[DataStore] = None
+data_store: DataStore | None = None
 
 
 def get_data_store() -> DataStore:
@@ -214,7 +227,7 @@ def get_data_store() -> DataStore:
     return data_store
 
 
-def init_data_store():
+def init_data_store() -> DataStore:
     global data_store
     data_store = DataStore(settings.DATA_PATH)
     data_store.load_all()

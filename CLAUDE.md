@@ -25,6 +25,14 @@ poetry run pytest tests/e2e/                         # End-to-end tests only
 poetry run pytest tests/unit/test_models.py -v      # Single file
 poetry run pytest -k "test_search"                   # Tests matching pattern
 poetry run pytest --cov=app --cov-report=term-missing  # With coverage
+
+# Linting and formatting (ruff)
+poetry run ruff check app/ tests/       # Linting
+poetry run ruff check app/ tests/ --fix # Linting avec auto-fix
+poetry run ruff format app/ tests/      # Formatage
+
+# Type checking (mypy)
+poetry run mypy app/                     # Vérification des types
 ```
 
 ## Architecture

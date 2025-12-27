@@ -1,8 +1,8 @@
 """Unit tests for search service."""
-import pytest
 
-from app.services.search import SearchService
+
 from app.services.data_loader import DataStore
+from app.services.search import SearchService
 
 
 class TestSearchService:

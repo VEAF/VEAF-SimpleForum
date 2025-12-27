@@ -1,7 +1,6 @@
 """Unit tests for data_loader service."""
-import pytest
+
 from pathlib import Path
-from datetime import datetime
 
 from app.services.data_loader import DataStore
 
@@ -111,7 +110,9 @@ class TestDataStore:
 
     def test_get_category_topics_sort_by_views(self, test_data_store: DataStore):
         """Test getting topics sorted by view count."""
-        topics, _ = test_data_store.get_category_topics(1, sort_by="view_count", order="desc")
+        topics, _ = test_data_store.get_category_topics(
+            1, sort_by="view_count", order="desc"
+        )
         assert topics[0]["view_count"] >= topics[1]["view_count"]
 
     def test_get_category_topics_pagination(self, test_data_store: DataStore):

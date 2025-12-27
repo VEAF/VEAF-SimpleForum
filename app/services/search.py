@@ -1,17 +1,17 @@
 import re
-from typing import List, TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from app.services.data_loader import DataStore
 
 
 class SearchService:
-    def __init__(self, data_store: "DataStore"):
+    def __init__(self, data_store: "DataStore") -> None:
         self.store = data_store
-        self.title_index: dict[str, List[int]] = {}
+        self.title_index: dict[str, list[int]] = {}
         self._build_index()
 
-    def _build_index(self):
+    def _build_index(self) -> None:
         for tid, topic in self.store.topics.items():
             title = topic.get("title", "").lower()
             words = re.findall(r"\w+", title, re.UNICODE)
@@ -22,7 +22,7 @@ class SearchService:
                     self.title_index[word] = []
                 self.title_index[word].append(tid)
 
-    def search(self, query: str, limit: int = 20) -> List[dict]:
+    def search(self, query: str, limit: int = 20) -> list[dict[str, Any]]:
         words = re.findall(r"\w+", query.lower(), re.UNICODE)
         if not words:
             return []
@@ -42,7 +42,9 @@ class SearchService:
         for s in result_sets[1:]:
             matching_ids &= s
 
-        results = [self.store.topics[tid] for tid in matching_ids if tid in self.store.topics]
+        results = [
+            self.store.topics[tid] for tid in matching_ids if tid in self.store.topics
+        ]
         results.sort(key=lambda t: t.get("view_count", 0), reverse=True)
 
         return results[:limit]

@@ -1,19 +1,20 @@
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from app.config import settings
+from app.routers import api, web
 from app.services.data_loader import init_data_store
-from app.routers import web, api
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     init_data_store()
     yield
 
@@ -38,28 +39,21 @@ templates = Jinja2Templates(directory=Path(__file__).parent / "templates")
 
 
 @app.exception_handler(StarletteHTTPException)
-async def http_exception_handler(request: Request, exc: StarletteHTTPException):
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> Response:
     if exc.status_code == 404:
         accept = request.headers.get("accept", "")
         if "application/json" in accept:
-            return JSONResponse(
-                status_code=404,
-                content={"detail": exc.detail}
-            )
-        return templates.TemplateResponse(
-            request,
-            "404.html",
-            status_code=404
-        )
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"detail": exc.detail}
-    )
+            return JSONResponse(status_code=404, content={"detail": exc.detail})
+        return templates.TemplateResponse(request, "404.html", status_code=404)
+    return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
 
 
 @app.get("/health")
-async def health_check():
+async def health_check() -> dict[str, str | int]:
     from app.services.data_loader import get_data_store
+
     store = get_data_store()
     return {
         "status": "healthy",

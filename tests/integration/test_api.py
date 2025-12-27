@@ -1,5 +1,5 @@
 """Integration tests for API endpoints."""
-import pytest
+
 from fastapi.testclient import TestClient
 
 
@@ -93,7 +93,9 @@ class TestCategoriesAPI:
 
     def test_list_category_topics_sorting(self, client: TestClient):
         """Test topics sorting."""
-        response = client.get("/api/v1/categories/1/topics?sort_by=view_count&order=desc")
+        response = client.get(
+            "/api/v1/categories/1/topics?sort_by=view_count&order=desc"
+        )
         assert response.status_code == 200
         data = response.json()
         items = data["items"]
