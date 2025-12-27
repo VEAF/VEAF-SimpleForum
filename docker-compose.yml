@@ -6,8 +6,8 @@ services:
       - VIRTUAL_PORT=8080
       - LETSENCRYPT_HOST=${LETSENCRYPT_HOST}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL}
-      - DATA_PATH=/app/var/data
-      - IMAGES_PATH=/app/var/data/images
+      - DATA_PATH=/data
+      - IMAGES_PATH=/data/images
     volumes:
       - ./var/data:/app/var/data
     restart: unless-stopped
