@@ -53,7 +53,8 @@ class TestDataStore:
         topic = test_data_store.topics[100]
         assert "# First Test Topic" in topic["content"]
         assert topic["content_html"] is not None
-        assert "<h1>" in topic["content_html"]
+        # Le h1 du titre est supprimé pour éviter la duplication avec le titre du template
+        assert "<h1>" not in topic["content_html"]
         assert "<strong>bold</strong>" in topic["content_html"]
 
     def test_category_tree_built(self, test_data_store: DataStore):

@@ -20,7 +20,7 @@ class TestHomePage:
     def test_home_page_contains_stats(self, client: TestClient):
         """Test that home page contains statistics."""
         response = client.get("/")
-        assert "Categories" in response.text
+        assert "Catégories" in response.text
         assert "Topics" in response.text
         assert "Posts" in response.text
 
