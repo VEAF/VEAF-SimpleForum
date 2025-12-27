@@ -9,7 +9,7 @@ services:
       - DATA_PATH=/data
       - IMAGES_PATH=/data/images
     volumes:
-      - ./var/data:/app/var/data
+      - ${DATA_VOLUME_PATH:-./data}:/data
     restart: unless-stopped
     networks:
       - webproxy
